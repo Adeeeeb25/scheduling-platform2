@@ -6,6 +6,7 @@ A fully functional scheduling/booking web application that replicates Cal.com's 
 
 ### Core Features
 - **Event Types Management** - Create, edit, and delete event types with customizable durations
+- **Date Range Selection** - Set specific date ranges for when events can be booked
 - **Availability Settings** - Set available days and time slots for your schedule
 - **Public Booking Page** - Clean calendar interface for booking appointments
 - **Bookings Dashboard** - View and manage upcoming and past bookings
@@ -18,6 +19,7 @@ A fully functional scheduling/booking web application that replicates Cal.com's 
 - Real-time availability calculation
 - Auto-seeded sample data for immediate testing
 - Session-based authentication (no login UI required)
+- Date range constraints for event availability
 
 ## Tech Stack
 
@@ -174,14 +176,15 @@ The application comes with pre-seeded sample data:
 
 1. **Login** - Click "Go to Admin" and enter the admin panel
 2. **Create Event Type** - Click "New Event" to create a booking type
-3. **Set Availability** - Configure your working hours
-4. **View Bookings** - Dashboard shows all upcoming and past bookings
-5. **Manage Bookings** - Cancel bookings or view details
+3. **Set Date Range** - Configure which dates the event is available
+4. **Set Availability** - Configure your working hours
+5. **View Bookings** - Dashboard shows all upcoming and past bookings
+6. **Manage Bookings** - Cancel bookings or view details
 
 ### Public Booking
 
 1. **Access Booking Page** - Visit `/book/[event-slug]` (e.g., `/book/30-min-meeting`)
-2. **Select Date** - Pick a date from the calendar
+2. **Select Date** - Pick a date from the calendar (respects date range)
 3. **Select Time** - Choose from available time slots
 4. **Enter Details** - Provide your name and email
 5. **Confirm** - Complete the booking
@@ -208,6 +211,8 @@ CREATE TABLE event_types (
   description TEXT,
   duration_minutes INT,
   slug VARCHAR(255) UNIQUE,
+  date_from DATE,
+  date_to DATE,
   created_at TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -243,57 +248,12 @@ CREATE TABLE bookings (
 );
 ```
 
-## Testing the Application
+## Deployment
 
-### Manual Testing Checklist
-
-1. **Admin Panel**
-   - [ ] Access admin panel
-   - [ ] Create new event type
-   - [ ] Edit event type
-   - [ ] Delete event type
-   - [ ] View all bookings
-   - [ ] Cancel a booking
-
-2. **Availability**
-   - [ ] Set availability for all days
-   - [ ] Toggle days on/off
-   - [ ] Save settings
-   - [ ] Verify changes
-
-3. **Public Booking**
-   - [ ] Access booking page with valid slug
-   - [ ] Calendar displays with disabled past dates
-   - [ ] Time slots update based on availability
-   - [ ] Book a slot with name and email
-   - [ ] See confirmation page
-   - [ ] Try double-booking (should fail)
-
-4. **Responsive Design**
-   - [ ] Test on desktop (1920px, 1440px)
-   - [ ] Test on tablet (768px)
-   - [ ] Test on mobile (375px)
-
-## Assumptions
-
-1. **Single Admin User** - The application assumes one default admin user identified by `DEFAULT_USER_ID` in the environment variables
-2. **Session-Based Auth** - No login UI; admin accesses the panel through a simple session initialization
-3. **No Email Notifications** - While bookings are created, no actual emails are sent (can be added with a mail service)
-4. **UTC Timezone** - Default timezone is UTC; can be extended to support multiple timezones
-5. **Auto-Seed** - Database is automatically seeded on server startup
-6. **No Authentication on Public Pages** - Booking pages are fully public
-
-## Future Enhancements
-
-- Email notifications on booking confirmation/cancellation
-- Multiple admin users with authentication
-- Timezone conversion for different regions
-- Custom booking questions/fields
-- Buffer time between meetings
-- Date overrides (block specific dates)
-- Rescheduling flow for existing bookings
-- Payment integration for paid bookings
-- Calendar integrations (Google Calendar, Outlook)
+See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for detailed instructions on deploying to:
+- **Frontend**: Vercel
+- **Backend**: Railway
+- **Database**: Railway MySQL
 
 ## Troubleshooting
 
@@ -320,13 +280,6 @@ CREATE TABLE bookings (
 - Delete `node_modules` and reinstall: `npm install`
 - Restart development server
 
-## Performance Considerations
-
-- Database indexes on `slug`, `user_id`, and booking constraints
-- Connection pooling for MySQL (10 connections limit)
-- Session middleware for authentication caching
-- Calendar component optimized to prevent re-renders
-
 ## Security Notes
 
 - Session-based authentication with httpOnly cookies
@@ -337,12 +290,13 @@ CREATE TABLE bookings (
 
 ## License
 
-This project is created for educational purposes as an SDE Intern Assignment.
+This project is created for educational purposes.
 
 ## Support
 
-For issues or questions, please refer to the GitHub issues section or contact the developer.
+For issues or questions, please refer to the GitHub issues section.
 
 ---
 
 **Happy Scheduling! 📅**
+
