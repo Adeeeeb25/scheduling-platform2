@@ -26,6 +26,7 @@ const corsOptions = {
     'http://localhost:3000',
     'http://localhost:3001',
     'https://scheduling-platform.vercel.app',
+    'https://scheduling-platform-lbrn-mg0nzd93o-adeeeeb25s-projects.vercel.app',
     process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null
   ].filter(Boolean),
   credentials: true,
