@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { publicAPI, parseDate, formatDateRange } from '../services/api';
+import { publicAPI, formatDateRange } from '../services/api';
 import Calendar from '../components/Calendar';
 import './PublicBookingPage.css';
 
@@ -17,17 +17,7 @@ const PublicBookingPage = () => {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    loadEventType();
-  }, [slug]);
-
-  useEffect(() => {
-    if (selectedDate) {
-      loadAvailableSlots();
-    }
-  }, [selectedDate]);
-
-  const loadEventType = async () => {
+  const loadEventType = useCallback(async () => {
     try {
       const response = await publicAPI.getEventType(slug);
       setEventType(response.data);
@@ -37,9 +27,9 @@ const PublicBookingPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [slug, navigate]);
 
-  const loadAvailableSlots = async () => {
+  const loadAvailableSlots = useCallback(async () => {
     try {
       const dateStr = selectedDate.toISOString().split('T')[0];
       const response = await publicAPI.getAvailability(slug, dateStr);
@@ -48,7 +38,17 @@ const PublicBookingPage = () => {
     } catch (err) {
       setError('Failed to load available slots');
     }
-  };
+  }, [selectedDate, slug]);
+
+  useEffect(() => {
+    loadEventType();
+  }, [loadEventType]);
+
+  useEffect(() => {
+    if (selectedDate) {
+      loadAvailableSlots();
+    }
+  }, [selectedDate, loadAvailableSlots]);
 
   const handleDateSelect = (date) => {
     setSelectedDate(date);

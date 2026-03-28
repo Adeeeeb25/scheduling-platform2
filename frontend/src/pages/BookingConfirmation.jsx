@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { publicAPI } from '../services/api';
 import './BookingConfirmation.css';
@@ -10,11 +10,7 @@ const BookingConfirmation = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    loadBooking();
-  }, [bookingId]);
-
-  const loadBooking = async () => {
+  const loadBooking = useCallback(async () => {
     try {
       const response = await publicAPI.getConfirmation(bookingId);
       setBooking(response.data);
@@ -23,7 +19,11 @@ const BookingConfirmation = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [bookingId]);
+
+  useEffect(() => {
+    loadBooking();
+  }, [loadBooking]);
 
   if (loading) {
     return <div className="loading-screen">Loading confirmation...</div>;

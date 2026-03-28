@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { eventTypesAPI } from '../services/api';
 import './EventTypeForm.css';
@@ -18,13 +18,7 @@ const EventTypeForm = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  useEffect(() => {
-    if (id) {
-      loadEventType();
-    }
-  }, [id]);
-
-  const loadEventType = async () => {
+  const loadEventType = useCallback(async () => {
     try {
       const response = await eventTypesAPI.getById(id);
       setFormData(response.data);
@@ -33,7 +27,13 @@ const EventTypeForm = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      loadEventType();
+    }
+  }, [id, loadEventType]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
