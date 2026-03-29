@@ -22,10 +22,12 @@ const PORT = process.env.PORT;
 
 
 // CORS Configuration
-const corsOptions = {
+const cors = require('cors');
+
+app.use(cors({
   origin: true,
   credentials: true
-};
+}));
 
 // Middleware
 app.use(cors(corsOptions));
