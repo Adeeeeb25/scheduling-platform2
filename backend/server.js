@@ -18,11 +18,12 @@ const errorHandler = require('./middleware/errorHandler');
 
 // ✅ CREATE APP FIRST
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 8080;
 
 // ✅ SIMPLE & SAFE CORS (no config headache)
 app.use(cors({
-  origin: true,
+  origin: "https://scheduling-platform2-ctix.vercel.app",
   credentials: true
 }));
 
@@ -37,10 +38,10 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: {
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,          // REQUIRED
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
-      sameSite: 'none'
+      sameSite: 'none'       // REQUIRED
     }
   })
 );
