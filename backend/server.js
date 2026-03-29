@@ -5,6 +5,11 @@ const session = require('express-session');
 const initializeDatabase = require('./config/initDb');
 const seedDatabase = require('./seeds/seed');
 
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
+
 // Routes
 const authRoutes = require('./routes/auth');
 const eventTypesRoutes = require('./routes/eventTypes');
@@ -22,12 +27,9 @@ const PORT = process.env.PORT;
 
 
 // CORS Configuration
-const cors = require('cors');
 
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
+
+
 
 // Middleware
 app.use(cors(corsOptions));
