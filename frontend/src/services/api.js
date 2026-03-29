@@ -67,4 +67,6 @@ export const publicAPI = {
   getConfirmation: (id) => api.get(`/public/bookings/${id}/confirmation`)
 };
 
+console.log("API URL:", API_BASE_URL);
+
 export default api;
