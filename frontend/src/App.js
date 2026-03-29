@@ -21,9 +21,24 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already authenticated
-    verifySession();
-  }, []);
+  const initAuth = async () => {
+    try {
+      // Step 1: Create session
+      await authAPI.initializeSession();
+
+      // Step 2: Verify session
+      const response = await authAPI.verifySession();
+      setIsAuthenticated(response.data.authenticated);
+    } catch (error) {
+      console.error("Auth init failed:", error);
+      setIsAuthenticated(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  initAuth();
+}, []);
 
   const verifySession = async () => {
     try {
