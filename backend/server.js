@@ -23,16 +23,8 @@ const PORT = process.env.PORT;
 
 // CORS Configuration
 const corsOptions = {
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'https://scheduling-platform.vercel.app',
-    'https://scheduling-platform-lbrn-mg0nzd93o-adeeeeb25s-projects.vercel.app',
-    'https://scheduling-platform2-ctix-gtq45p11y-adeeeeb25s-projects.vercel.app',
-    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null
-  ].filter(Boolean),
-  credentials: true,
-  optionsSuccessStatus: 200
+  origin: true,
+  credentials: true
 };
 
 // Middleware
