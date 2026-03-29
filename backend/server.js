@@ -1,14 +1,10 @@
 require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
 const initializeDatabase = require('./config/initDb');
 const seedDatabase = require('./seeds/seed');
-
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
 
 // Routes
 const authRoutes = require('./routes/auth');
@@ -19,87 +15,75 @@ const publicRoutes = require('./routes/public');
 
 // Middleware
 const errorHandler = require('./middleware/errorHandler');
-const { requireAuth } = require('./middleware/auth');
 
-// Initialize Express app
+// ✅ CREATE APP FIRST
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 8080;
 
+// ✅ SIMPLE & SAFE CORS (no config headache)
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 
-// CORS Configuration
-
-
-
-
-// Middleware
-app.use(cors(corsOptions));
+// Body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Session middleware (in-memory for simplicity)
+// Session
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'secret-key',
     resave: false,
     saveUninitialized: true,
     cookie: {
-      secure: process.env.NODE_ENV === 'production', // HTTPS in production
+      secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      maxAge: 24 * 60 * 60 * 1000,
       sameSite: 'lax'
     }
   })
 );
 
-// API Routes
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/event-types', eventTypesRoutes);
 app.use('/api/availability', availabilityRoutes);
 app.use('/api/bookings', bookingsRoutes);
 app.use('/api/public', publicRoutes);
 
-// Health check (no database required)
+// Health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date() });
+  res.json({ status: 'ok' });
 });
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date() });
+  res.json({ status: 'ok' });
 });
 
-// Error handling middleware
+// Error handler
 app.use(errorHandler);
 
-// 404 handler
+// 404
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// Initialize database and start server
+// Start server
 const startServer = async () => {
   try {
     console.log('🔧 Initializing database...');
     await initializeDatabase();
 
-    console.log('🌱 Seeding database with sample data...');
+    console.log('🌱 Seeding database...');
     await seedDatabase();
 
     app.listen(PORT, () => {
-      console.log(`✅ Server running on http://localhost:${PORT}`);
-      console.log(`📚 API Documentation:`);
-      console.log(`   Admin Routes:`);
-      console.log(`   - POST http://localhost:${PORT}/api/auth/session`);
-      console.log(`   - GET http://localhost:${PORT}/api/event-types`);
-      console.log(`   - GET http://localhost:${PORT}/api/availability`);
-      console.log(`   - GET http://localhost:${PORT}/api/bookings`);
-      console.log(`   Public Routes (no auth required):`);
-      console.log(`   - GET http://localhost:${PORT}/api/public/event-types/:slug`);
-      console.log(`   - GET http://localhost:${PORT}/api/public/availability/:slug?date=YYYY-MM-DD`);
-      console.log(`   - POST http://localhost:${PORT}/api/public/bookings`);
+      console.log(`✅ Server running on port ${PORT}`);
     });
+
   } catch (error) {
-    console.error('❌ Failed to start server:', error.message || error.code || error);
-    console.error('Error details:', error);
+    console.error('❌ Failed to start server:', error);
     process.exit(1);
   }
 };
